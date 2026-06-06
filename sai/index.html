@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REEL — Movie Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #080810;
+  --bg2:     #0f0f1a;
+  --bg3:     #16162a;
+  --accent:  #ff3b5c;
+  --accent2: #ff6b35;
+  --gold:    #ffc947;
+  --text:    #f0eeff;
+  --muted:   #6b6880;
+  --border:  rgba(255,59,92,0.18);
+  --white10: rgba(255,255,255,0.07);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Syne',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* grain */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)' opacity='0.045'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9999;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 52px;
+  background:linear-gradient(to bottom,rgba(8,8,16,.97),transparent);
+  backdrop-filter:blur(4px);
+}
+.logo{
+  font-family:'Anton',sans-serif;
+  font-size:26px;letter-spacing:5px;
+  color:var(--accent);text-decoration:none;
+}
+.logo span{color:var(--text);}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{
+  color:rgba(240,238,255,.5);font-size:12px;
+  letter-spacing:1.8px;text-transform:uppercase;
+  text-decoration:none;font-weight:600;transition:color .2s;
+}
+.nav-links a:hover{color:var(--accent);}
+.nav-btn{
+  background:var(--accent);color:#fff;
+  border:none;font-family:'Syne',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;padding:10px 24px;
+  cursor:pointer;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+  transition:background .2s;
+}
+.nav-btn:hover{background:var(--accent2);}
+
+/* ── HERO ── */
+.hero{
+  position:relative;height:100vh;min-height:620px;
+  display:flex;align-items:flex-end;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=1800&q=80') center/cover no-repeat;
+  animation:hzoom 20s ease-in-out infinite alternate;
+  filter:brightness(.4) saturate(.9);
+}
+@keyframes hzoom{from{transform:scale(1)}to{transform:scale(1.1)}}
+.hero-vignette{
+  position:absolute;inset:0;
+  background:linear-gradient(120deg,rgba(8,8,16,.95) 0%,rgba(8,8,16,.5) 50%,transparent 100%),
+             linear-gradient(to top,var(--bg) 0%,transparent 50%);
+}
+.hero-content{
+  position:relative;padding:0 52px 80px;max-width:680px;
+  animation:slideUp .9s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,59,92,.15);border:1px solid rgba(255,59,92,.3);
+  color:var(--accent);font-size:10px;font-weight:700;
+  letter-spacing:2.5px;text-transform:uppercase;
+  padding:6px 14px;margin-bottom:20px;
+}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;display:block;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+.hero h1{
+  font-family:'Anton',sans-serif;
+  font-size:clamp(56px,9vw,110px);
+  line-height:.9;letter-spacing:2px;
+  margin-bottom:22px;
+  text-transform:uppercase;
+}
+.hero h1 span{
+  display:block;
+  -webkit-text-stroke:1px var(--accent);
+  -webkit-text-fill-color:transparent;
+}
+.hero-desc{
+  color:rgba(240,238,255,.55);font-size:15px;
+  line-height:1.7;font-weight:400;
+  max-width:420px;margin-bottom:36px;
+}
+.hero-actions{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.btn-red{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;font-family:'Syne',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;padding:14px 32px;
+  cursor:pointer;transition:all .25s;
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+}
+.btn-red:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(255,59,92,.35);}
+.hero-stats{display:flex;gap:24px;margin-left:8px;}
+.stat-item{}
+.stat-num{font-family:'Anton',sans-serif;font-size:22px;color:var(--gold);}
+.stat-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+
+/* ── SEARCH BAR ── */
+.search-wrap{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:22px 52px;
+  display:flex;align-items:center;gap:16px;
+  position:sticky;top:62px;z-index:100;
+  backdrop-filter:blur(12px);
+}
+.search-inner{
+  position:relative;flex:1;max-width:540px;
+}
+.search-inner input{
+  width:100%;background:var(--bg3);
+  border:1px solid rgba(255,255,255,.08);
+  color:var(--text);font-family:'Syne',sans-serif;
+  font-size:14px;padding:12px 16px 12px 44px;
+  outline:none;transition:border .2s;
+}
+.search-inner input:focus{border-color:var(--accent);}
+.search-inner input::placeholder{color:var(--muted);}
+.search-icon{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:16px;pointer-events:none;
+}
+.filter-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.fchip{
+  background:var(--bg3);border:1px solid rgba(255,255,255,.08);
+  color:var(--muted);font-family:'Syne',sans-serif;
+  font-size:11px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;padding:8px 16px;
+  cursor:pointer;transition:all .2s;
+}
+.fchip:hover,.fchip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* ── SECTION ── */
+.section{padding:64px 52px;}
+.sec-hd{
+  display:flex;align-items:center;
+  justify-content:space-between;margin-bottom:36px;
+}
+.sec-title{
+  font-family:'Anton',sans-serif;
+  font-size:30px;letter-spacing:3px;text-transform:uppercase;
+}
+.sec-title span{color:var(--accent);}
+.sec-line{flex:1;height:1px;background:var(--border);margin:0 20px;}
+.view-all{
+  background:none;border:1px solid var(--border);
+  color:var(--muted);font-family:'Syne',sans-serif;
+  font-size:11px;font-weight:600;letter-spacing:2px;
+  text-transform:uppercase;padding:8px 18px;cursor:pointer;
+  transition:all .2s;
+}
+.view-all:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ── MOVIES GRID ── */
+.movies-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:3px;
+}
+
+.movie-card{
+  position:relative;aspect-ratio:2/3;overflow:hidden;
+  cursor:pointer;background:var(--bg3);
+}
+
+/* Background image fills the whole card */
+.movie-card-bg{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center top;
+  transition:transform .65s cubic-bezier(.25,.46,.45,.94),filter .4s;
+  filter:brightness(.8) saturate(1.05);
+}
+.movie-card:hover .movie-card-bg{
+  transform:scale(1.07);
+  filter:brightness(.5) saturate(.8);
+}
+
+.movie-card-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(8,8,16,.98) 0%,rgba(8,8,16,.45) 55%,rgba(8,8,16,.1) 100%);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:20px;
+}
+
+.mc-genre{
+  font-size:9px;font-weight:700;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--accent);
+  margin-bottom:6px;
+  opacity:0;transform:translateY(6px);
+  transition:all .3s .05s;
+}
+.movie-card:hover .mc-genre{opacity:1;transform:translateY(0);}
+
+.mc-title{
+  font-family:'Anton',sans-serif;
+  font-size:20px;letter-spacing:1px;
+  text-transform:uppercase;line-height:1;
+  margin-bottom:8px;
+}
+
+.mc-meta{
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;color:rgba(240,238,255,.5);
+  margin-bottom:14px;
+}
+.mc-rating{color:var(--gold);font-weight:700;}
+
+.mc-book{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent);color:#fff;
+  border:none;font-family:'Syne',sans-serif;
+  font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;padding:10px 18px;
+  cursor:pointer;
+  opacity:0;transform:translateY(10px);
+  transition:all .32s;
+  clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);
+}
+.movie-card:hover .mc-book{opacity:1;transform:translateY(0);}
+.mc-book:hover{background:var(--accent2);}
+
+.mc-badge{
+  position:absolute;top:14px;right:14px;
+  background:var(--gold);color:#000;
+  font-size:9px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;padding:4px 10px;
+}
+.mc-badge.new{background:var(--accent);color:#fff;}
+
+/* card load animation */
+.movie-card{animation:cardIn .5s ease both;}
+.movie-card:nth-child(1){animation-delay:.04s}
+.movie-card:nth-child(2){animation-delay:.09s}
+.movie-card:nth-child(3){animation-delay:.14s}
+.movie-card:nth-child(4){animation-delay:.19s}
+.movie-card:nth-child(5){animation-delay:.24s}
+.movie-card:nth-child(6){animation-delay:.29s}
+.movie-card:nth-child(7){animation-delay:.34s}
+.movie-card:nth-child(8){animation-delay:.39s}
+@keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── MODAL ── */
+.modal-veil{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(12px);
+  z-index:600;display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.modal-veil.open{opacity:1;pointer-events:all;}
+
+.modal-box{
+  background:var(--bg2);
+  border:1px solid var(--border);
+  width:min(700px,95vw);max-height:92vh;
+  overflow-y:auto;
+  transform:scale(.95) translateY(20px);
+  transition:transform .38s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-veil.open .modal-box{transform:scale(1) translateY(0);}
+
+/* modal movie hero bg */
+.modal-hero{
+  position:relative;height:220px;overflow:hidden;
+}
+.modal-hero-bg{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center 20%;
+  filter:brightness(.45) saturate(.7);
+}
+.modal-hero-grad{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,var(--bg2) 0%,transparent 60%);
+  display:flex;align-items:flex-end;
+  padding:24px 30px;gap:16px;
+}
+.modal-movie-poster{
+  width:70px;height:105px;
+  object-fit:cover;object-position:top;
+  border:2px solid var(--accent);flex-shrink:0;
+  background:var(--bg3);
+}
+.modal-movie-info{flex:1;}
+.modal-genre-label{
+  font-size:9px;font-weight:700;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--accent);margin-bottom:6px;
+}
+.modal-title{
+  font-family:'Anton',sans-serif;
+  font-size:28px;letter-spacing:1px;text-transform:uppercase;
+  line-height:1;margin-bottom:6px;
+}
+.modal-meta{
+  display:flex;gap:12px;font-size:12px;
+  color:rgba(240,238,255,.5);
+}
+.modal-meta .star{color:var(--gold);}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);
+  color:var(--text);width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:15px;border-radius:50%;
+  transition:all .2s;
+}
+.modal-close:hover{border-color:var(--accent);color:var(--accent);}
+
+.modal-body{padding:24px 30px;}
+
+/* date picker */
+.date-strip{display:flex;gap:8px;margin-bottom:24px;overflow-x:auto;padding-bottom:4px;}
+.date-chip{
+  flex-shrink:0;
+  background:var(--bg3);border:1px solid rgba(255,255,255,.07);
+  color:var(--muted);padding:10px 16px;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:12px;font-weight:600;
+  text-align:center;transition:all .2s;min-width:60px;
+}
+.date-chip .day{font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;}
+.date-chip .num{font-family:'Anton',sans-serif;font-size:20px;letter-spacing:1px;}
+.date-chip:hover{border-color:var(--accent);}
+.date-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+/* showtimes */
+.ml{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.time-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+.time-btn{
+  background:var(--bg3);border:1px solid rgba(255,255,255,.08);
+  color:var(--muted);font-family:'Syne',sans-serif;
+  font-size:13px;font-weight:500;padding:9px 20px;
+  cursor:pointer;transition:all .2s;
+}
+.time-btn:hover{border-color:var(--accent);color:var(--accent);}
+.time-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+
+/* screen */
+.screen-block{text-align:center;margin-bottom:18px;}
+.screen-glow{
+  height:4px;width:55%;margin:0 auto 7px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  border-radius:2px;opacity:.8;
+}
+.screen-label{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:var(--muted);}
+
+/* SEATS */
+.seat-map{display:flex;flex-direction:column;align-items:center;gap:7px;margin-bottom:20px;}
+.seat-row-{display:flex;align-items:center;gap:5px;}
+.row-id{font-size:10px;color:var(--muted);width:14px;text-align:center;font-weight:700;}
+.seat{
+  width:27px;height:25px;
+  border-radius:4px 4px 2px 2px;
+  cursor:pointer;transition:transform .15s,background .15s;
+  border:1px solid transparent;position:relative;
+}
+.seat::after{
+  content:'';position:absolute;
+  bottom:-3px;left:3px;right:3px;height:3px;
+  border-radius:0 0 2px 2px;
+  background:inherit;filter:brightness(.45);
+}
+.seat.av{background:#1e1e32;border-color:#2e2e48;}
+.seat.av:hover{background:rgba(255,59,92,.22);border-color:var(--accent);transform:translateY(-2px);}
+.seat.sel{background:var(--accent);border-color:#c0182f;}
+.seat.ok{background:#12121e;border-color:#1c1c2e;cursor:not-allowed;opacity:.35;}
+.aisle{width:14px;}
+
+/* legend */
+.legend{display:flex;justify-content:center;gap:20px;margin-bottom:22px;}
+.li-{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted);}
+.ls{width:16px;height:14px;border-radius:3px 3px 1px 1px;}
+
+/* summary */
+.sum-bar{
+  background:var(--bg3);border:1px solid var(--border);
+  padding:18px 22px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:14px;
+}
+.sv .sk{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.sv .sn{font-family:'Anton',sans-serif;font-size:22px;letter-spacing:1px;}
+.sv .sn.red{color:var(--accent);}
+.book-now{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;border:none;font-family:'Syne',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;padding:14px 32px;
+  cursor:pointer;
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+  transition:all .25s;white-space:nowrap;
+}
+.book-now:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 28px rgba(255,59,92,.35);}
+.book-now:disabled{opacity:.3;cursor:not-allowed;}
+
+/* success */
+.success-panel{display:none;text-align:center;padding:52px 30px 44px;}
+.success-panel.show{display:block;}
+.modal-body.gone{display:none;}
+.sico{font-size:62px;display:block;margin-bottom:14px;}
+.success-panel h3{
+  font-family:'Anton',sans-serif;
+  font-size:34px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--accent);margin-bottom:10px;
+}
+.success-panel p{color:var(--muted);font-size:14px;line-height:1.7;max-width:340px;margin:0 auto 26px;}
+.tkt{
+  background:var(--bg3);border:1px solid var(--border);
+  max-width:380px;margin:0 auto 28px;padding:20px 24px;text-align:left;
+}
+.tr{
+  display:flex;justify-content:space-between;
+  padding:8px 0;font-size:13px;
+  border-bottom:1px solid rgba(255,59,92,.1);
+}
+.tr:last-child{border:none;}
+.tr span:first-child{color:var(--muted);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;}
+.tr span:last-child{color:var(--text);font-weight:600;}
+.back-btn{
+  background:none;border:1px solid var(--border);
+  color:var(--muted);font-family:'Syne',sans-serif;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  padding:12px 26px;cursor:pointer;transition:all .2s;
+}
+.back-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* footer */
+footer{
+  border-top:1px solid var(--border);
+  padding:30px 52px;
+  display:flex;align-items:center;justify-content:space-between;
+  color:var(--muted);font-size:12px;letter-spacing:.5px;
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* responsive */
+@media(max-width:768px){
+  nav{padding:14px 20px;}
+  .nav-links,.nav-btn{display:none;}
+  .hero-content{padding:0 20px 56px;}
+  .search-wrap{padding:16px 20px;flex-direction:column;align-items:flex-start;}
+  .section{padding:48px 20px;}
+  .movies-grid{grid-template-columns:repeat(2,1fr);}
+  footer{flex-direction:column;gap:10px;text-align:center;}
+  .sum-bar{flex-direction:column;align-items:flex-start;}
+  .book-now{width:100%;text-align:center;clip-path:none;}
+  .modal-body{padding:18px 16px;}
+}
+@media(max-width:420px){
+  .movies-grid{grid-template-columns:1fr;}
+  .mc-book{opacity:1;transform:none;}
+  .mc-genre{opacity:1;transform:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">RE<span>EL</span></a>
+  <ul class="nav-links">
+    <li><a href="#">Now Showing</a></li>
+    <li><a href="#">Coming Soon</a></li>
+    <li><a href="#">Cinemas</a></li>
+    <li><a href="#">Offers</a></li>
+  </ul>
+  <button class="nav-btn">Sign In</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🎬 Live Now in Theatres</div>
+    <h1>Watch<br>The<br><span>Big Screen</span></h1>
+    <p class="hero-desc">Premium cinema bookings, reserved seats, and the latest blockbusters — all in one place.</p>
+    <div class="hero-actions">
+      <button class="btn-red" onclick="document.getElementById('movies-section').scrollIntoView({behavior:'smooth'})">Browse All Movies</button>
+      <div class="hero-stats">
+        <div class="stat-item"><div class="stat-num">50+</div><div class="stat-lbl">Films</div></div>
+        <div class="stat-item"><div class="stat-num">12</div><div class="stat-lbl">Cinemas</div></div>
+        <div class="stat-item"><div class="stat-num">₹180</div><div class="stat-lbl">From</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH BAR -->
+<div class="search-wrap">
+  <div class="search-inner">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search movies, genres, actors…" oninput="filterMovies()">
+  </div>
+  <div class="filter-chips">
+    <button class="fchip active" onclick="setFilter('All',this)">All</button>
+    <button class="fchip" onclick="setFilter('Action',this)">Action</button>
+    <button class="fchip" onclick="setFilter('Sci-Fi',this)">Sci-Fi</button>
+    <button class="fchip" onclick="setFilter('Drama',this)">Drama</button>
+    <button class="fchip" onclick="setFilter('Thriller',this)">Thriller</button>
+    <button class="fchip" onclick="setFilter('Adventure',this)">Adventure</button>
+  </div>
+</div>
+
+<!-- MOVIES SECTION -->
+<section class="section" id="movies-section">
+  <div class="sec-hd">
+    <h2 class="sec-title">Now <span>Showing</span></h2>
+    <div class="sec-line"></div>
+    <button class="view-all" id="viewAllBtn">View All</button>
+  </div>
+  <div class="movies-grid" id="moviesGrid"></div>
+</section>
+
+<footer>
+  <a class="logo" href="#">RE<span>EL</span></a>
+  <span>© 2026 Reel Cinemas — All Rights Reserved</span>
+  <span>Privacy · Terms · Help</span>
+</footer>
+
+<!-- BOOKING MODAL -->
+<div class="modal-veil" id="modalVeil">
+  <div class="modal-box" role="dialog">
+
+    <div class="modal-hero">
+      <div class="modal-hero-bg" id="mHeroBg"></div>
+      <div class="modal-hero-grad">
+        <img class="modal-movie-poster" id="mPoster" src="" alt="">
+        <div class="modal-movie-info">
+          <div class="modal-genre-label" id="mGenre"></div>
+          <div class="modal-title" id="mTitle"></div>
+          <div class="modal-meta">
+            <span class="star">★</span>
+            <span id="mRating"></span>
+            <span>·</span>
+            <span id="mDur"></span>
+          </div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="modal-body" id="mbody">
+      <!-- DATES -->
+      <div class="ml">Select Date</div>
+      <div class="date-strip" id="dateStrip"></div>
+
+      <!-- TIMES -->
+      <div class="ml">Select Showtime</div>
+      <div class="time-row" id="timeRow"></div>
+
+      <!-- SCREEN -->
+      <div class="screen-block">
+        <div class="screen-glow"></div>
+        <div class="screen-label">SCREEN</div>
+      </div>
+
+      <!-- SEAT MAP -->
+      <div class="seat-map" id="seatMap"></div>
+
+      <!-- LEGEND -->
+      <div class="legend">
+        <div class="li-"><div class="ls" style="background:#1e1e32;border:1px solid #2e2e48;"></div>Available</div>
+        <div class="li-"><div class="ls" style="background:var(--accent);"></div>Selected</div>
+        <div class="li-"><div class="ls" style="background:#12121e;opacity:.4;border:1px solid #1c1c2e;"></div>Booked</div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="sum-bar">
+        <div class="sv"><div class="sk">Seats</div><div class="sn" id="sumS">0</div></div>
+        <div class="sv"><div class="sk">Per Seat</div><div class="sn">₹240</div></div>
+        <div class="sv"><div class="sk">Total</div><div class="sn red" id="sumT">₹0</div></div>
+        <button class="book-now" id="confirmBtn" disabled onclick="confirmBooking()">Confirm & Pay</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-panel" id="successPanel">
+      <span class="sico">🎟️</span>
+      <h3>Booking Done!</h3>
+      <p>Your seats are confirmed! Check your email for the e-ticket. Enjoy the movie!</p>
+      <div class="tkt" id="tktCard"></div>
+      <button class="back-btn" onclick="closeModal()">← Back to Movies</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const PRICE = 240;
+const ROWS  = ['A','B','C','D','E','F','G'];
+const COLS  = 9;
+const TIMES = ['10:30 AM','1:00 PM','3:30 PM','6:45 PM','9:30 PM'];
+
+const movies = [
+  {id:1, title:'AVENGERS ENDGAME',  genre:'Action',    tags:['Action'],           dur:'3h 01m', rating:'8.4', badge:'Hot',     img:'https://images.unsplash.com/photo-1635805737707-575885ab0820?w=600&q=80'},
+  {id:2, title:'INTERSTELLAR',      genre:'Sci-Fi',    tags:['Sci-Fi','Drama'],   dur:'2h 49m', rating:'8.6', badge:'Classic', img:'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&q=80'},
+  {id:3, title:'THE DARK KNIGHT',   genre:'Action',    tags:['Action','Thriller'],dur:'2h 32m', rating:'9.0', badge:'',        img:'https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=600&q=80'},
+  {id:4, title:'INCEPTION',         genre:'Sci-Fi',    tags:['Sci-Fi','Thriller'],dur:'2h 28m', rating:'8.8', badge:'New',     img:'https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=600&q=80'},
+  {id:5, title:'OPPENHEIMER',       genre:'Drama',     tags:['Drama'],            dur:'3h 00m', rating:'8.9', badge:'New',     img:'https://images.unsplash.com/photo-1608874973428-23ae0c77b5b4?w=600&q=80'},
+  {id:6, title:'DUNE PART TWO',     genre:'Sci-Fi',    tags:['Sci-Fi','Adventure'],dur:'2h 46m',rating:'8.5', badge:'',        img:'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=600&q=80'},
+  {id:7, title:'JOKER',             genre:'Drama',     tags:['Drama','Thriller'], dur:'2h 02m', rating:'8.4', badge:'',        img:'https://images.unsplash.com/photo-1547721064-da6cfb341d50?w=600&q=80'},
+  {id:8, title:'MAD MAX FURY ROAD', genre:'Action',    tags:['Action','Adventure'],dur:'2h 00m',rating:'8.1', badge:'',        img:'https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?w=600&q=80'},
+  {id:9, title:'THE BATMAN',        genre:'Action',    tags:['Action','Thriller'],dur:'2h 56m', rating:'7.9', badge:'',        img:'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=80'},
+  {id:10,title:'SPIDER-MAN NWH',    genre:'Action',    tags:['Action','Adventure'],dur:'2h 28m',rating:'8.2', badge:'Hot',     img:'https://images.unsplash.com/photo-1531259683007-016a7b628fc3?w=600&q=80'},
+  {id:11,title:'AVATAR 2',          genre:'Adventure', tags:['Adventure','Sci-Fi'],dur:'3h 12m',rating:'7.6', badge:'',        img:'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&q=80'},
+  {id:12,title:'MISSION IMPOSSIBLE',genre:'Action',    tags:['Action','Thriller'],dur:'2h 43m', rating:'7.8', badge:'',        img:'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=600&q=80'},
+];
+
+const booked = {};
+movies.forEach(m=>{
+  booked[m.id]=new Set();
+  let n=Math.floor(Math.random()*14)+5;
+  while(booked[m.id].size<n)
+    booked[m.id].add(`${Math.floor(Math.random()*ROWS.length)}-${Math.floor(Math.random()*COLS)}`);
+});
+
+let curMovie=null, curTime=TIMES[2], curDate=0, picked=new Set();
+let activeFilter='All', searchQ='';
+
+/* RENDER MOVIES */
+function renderMovies(){
+  const grid=document.getElementById('moviesGrid');
+  const list=movies.filter(m=>{
+    const matchF = activeFilter==='All' || m.tags.includes(activeFilter);
+    const matchS = m.title.toLowerCase().includes(searchQ.toLowerCase()) || m.genre.toLowerCase().includes(searchQ.toLowerCase());
+    return matchF && matchS;
+  });
+  if(!list.length){grid.innerHTML='<p style="color:var(--muted);padding:40px;grid-column:1/-1;text-align:center">No movies found.</p>';return;}
+  grid.innerHTML=list.map(m=>`
+    <div class="movie-card" onclick="openModal(${m.id})">
+      <div class="movie-card-bg" style="background-image:url('${m.img}')"></div>
+      ${m.badge?`<div class="mc-badge ${m.badge==='New'?'new':''}">${m.badge}</div>`:''}
+      <div class="movie-card-overlay">
+        <div class="mc-genre">${m.genre}</div>
+        <div class="mc-title">${m.title}</div>
+        <div class="mc-meta"><span class="mc-rating">★ ${m.rating}</span><span>·</span><span>${m.dur}</span></div>
+        <button class="mc-book" onclick="event.stopPropagation();openModal(${m.id})">Book Now →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setFilter(f,el){
+  activeFilter=f;
+  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderMovies();
+}
+
+function filterMovies(){
+  searchQ=document.getElementById('searchInput').value;
+  renderMovies();
+}
+
+/* DATES */
+function buildDates(){
+  const strip=document.getElementById('dateStrip');
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const now=new Date();
+  let html='';
+  for(let i=0;i<7;i++){
+    const d=new Date(now);d.setDate(now.getDate()+i);
+    html+=`<div class="date-chip ${i===curDate?'active':''}" onclick="pickDate(${i},this)">
+      <div class="day">${days[d.getDay()]}</div>
+      <div class="num">${d.getDate()}</div>
+    </div>`;
+  }
+  strip.innerHTML=html;
+}
+
+function pickDate(i,el){
+  curDate=i;picked.clear();
+  document.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderSeats();updateSummary();
+}
+
+/* TIMES */
+function buildTimes(){
+  document.getElementById('timeRow').innerHTML=TIMES.map(t=>
+    `<button class="time-btn ${t===curTime?'active':''}" onclick="pickTime('${t}',this)">${t}</button>`
+  ).join('');
+}
+
+function pickTime(t,el){
+  curTime=t;picked.clear();
+  document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderSeats();updateSummary();
+}
+
+/* SEATS */
+function renderSeats(){
+  const map=document.getElementById('seatMap');
+  const tk=booked[curMovie.id];
+  map.innerHTML=ROWS.map((r,ri)=>{
+    let row=`<div class="seat-row-"><div class="row-id">${r}</div>`;
+    for(let c=0;c<COLS;c++){
+      if(c===4)row+=`<div class="aisle"></div>`;
+      const k=`${ri}-${c}`;
+      const cls=tk.has(k)?'ok':(picked.has(k)?'sel':'av');
+      row+=`<div class="seat ${cls}" data-k="${k}" ${tk.has(k)?'':'onclick="toggleSeat(this)"'}></div>`;
+    }
+    return row+'</div>';
+  }).join('');
+}
+
+function toggleSeat(el){
+  const k=el.dataset.k;
+  if(picked.has(k)){picked.delete(k);el.className='seat av';}
+  else{picked.add(k);el.className='seat sel';}
+  updateSummary();
+}
+
+function updateSummary(){
+  const n=picked.size;
+  document.getElementById('sumS').textContent=n;
+  document.getElementById('sumT').textContent=`₹${n*PRICE}`;
+  document.getElementById('confirmBtn').disabled=n===0;
+}
+
+/* MODAL */
+function openModal(id){
+  curMovie=movies.find(m=>m.id===id);
+  picked.clear();curDate=0;curTime=TIMES[2];
+
+  document.getElementById('mHeroBg').style.backgroundImage=`url('${curMovie.img}')`;
+  document.getElementById('mPoster').src=curMovie.img;
+  document.getElementById('mGenre').textContent=curMovie.genre;
+  document.getElementById('mTitle').textContent=curMovie.title;
+  document.getElementById('mRating').textContent=curMovie.rating;
+  document.getElementById('mDur').textContent=curMovie.dur;
+
+  document.getElementById('mbody').classList.remove('gone');
+  document.getElementById('successPanel').classList.remove('show');
+
+  buildDates();buildTimes();renderSeats();updateSummary();
+
+  document.getElementById('modalVeil').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){
+  document.getElementById('modalVeil').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function confirmBooking(){
+  if(!picked.size)return;
+  const labels=[...picked].map(k=>{
+    const[r,c]=k.split('-').map(Number);return`${ROWS[r]}${c+1}`;
+  }).sort().join(', ');
+  const total=`₹${picked.size*PRICE}`;
+  const d=new Date();d.setDate(d.getDate()+curDate);
+  const dateStr=d.toDateString();
+  picked.forEach(k=>booked[curMovie.id].add(k));picked.clear();
+
+  document.getElementById('tktCard').innerHTML=[
+    ['Film',curMovie.title],
+    ['Date',dateStr],
+    ['Showtime',curTime],
+    ['Seats',labels],
+    ['Total Paid',total],
+    ['Ref No','REEL-'+Math.random().toString(36).substr(2,8).toUpperCase()]
+  ].map(([l,v])=>`<div class="tr"><span>${l}</span><span>${v}</span></div>`).join('');
+
+  document.getElementById('mbody').classList.add('gone');
+  document.getElementById('successPanel').classList.add('show');
+}
+
+document.getElementById('modalVeil').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modalVeil'))closeModal();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+renderMovies();
+</script>
+</body>
+</html>
